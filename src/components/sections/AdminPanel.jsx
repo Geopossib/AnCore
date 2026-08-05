@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SectionHeader from '../SectionHeader';
 
 const REPO_API = 'https://api.github.com/repos/Geopossib/AnCore';
@@ -43,6 +43,8 @@ export default function AdminPanel({ setView }) {
   const [issues, setIssues] = useState([]);
   const [status, setStatus] = useState('idle'); // idle | loading | error | loaded
   const [filter, setFilter] = useState('open');
+  const tabsRef = useRef(null);
+  const [pill, setPill] = useState({ left: 0, width: 0 });
 
   useEffect(() => {
     if (!unlocked) return;
@@ -61,6 +63,16 @@ export default function AdminPanel({ setView }) {
 
   const filtered = issues.filter((i) => (filter === 'all' ? true : i.state === filter));
   const openCount = issues.filter((i) => i.state === 'open').length;
+
+  useEffect(() => {
+    const container = tabsRef.current;
+    if (!container) return;
+    const activeBtn = container.querySelector(`[data-tab="${filter}"]`);
+    if (!activeBtn) return;
+    const containerRect = container.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+    setPill({ left: btnRect.left - containerRect.left, width: btnRect.width });
+  }, [filter, status]);
 
   if (!unlocked) {
     return (
@@ -98,7 +110,14 @@ export default function AdminPanel({ setView }) {
     <section className="view-section py-20">
       <SectionHeader num="14" label="Admin Panel" />
       <div className="flex items-center justify-between flex-wrap gap-4 mb-2">
-        <h2 className="font-head text-3xl font-extrabold">Support Tickets</h2>
+        <h2 className="font-head text-3xl font-extrabold flex items-center gap-3">
+          Support Tickets
+          {openCount > 0 && (
+            <span className="notif-badge inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-gold text-navy text-[11px] font-bold">
+              {openCount}
+            </span>
+          )}
+        </h2>
         <span className="text-xs text-muted">{openCount} open · {issues.length} total</span>
       </div>
       <p className="text-muted text-sm mb-6 max-w-lg">
@@ -106,12 +125,16 @@ export default function AdminPanel({ setView }) {
         close them straight on GitHub — this panel is a fast read-only view for triage.
       </p>
 
-      <div className="flex gap-2 mb-6">
+      <div ref={tabsRef} className="relative inline-flex gap-1 mb-6 p-1 panel rounded">
+        <div className="pill-indicator rounded" style={{ left: pill.left, width: pill.width }} />
         {['open', 'closed', 'all'].map((f) => (
           <button
             key={f}
+            data-tab={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded text-xs font-semibold capitalize transition ${filter === f ? 'btn-gold' : 'btn-outline'}`}
+            className={`relative z-10 px-4 py-2 rounded text-xs font-semibold capitalize transition-colors ${
+              filter === f ? 'text-navy' : 'text-muted hover:text-white'
+            }`}
           >
             {f}
           </button>

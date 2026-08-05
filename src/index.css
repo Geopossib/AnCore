@@ -147,3 +147,47 @@ header.scrolled{
 @media (prefers-reduced-motion: reduce){
   .logo-draw{stroke-dashoffset:0;}
 }
+
+/* ===== Infinite marquee (trusted-by ticker) ===== */
+.marquee-track{display:flex;width:max-content;}
+@media (prefers-reduced-motion: no-preference){
+  .marquee-track{animation:marqueeScroll 22s linear infinite;}
+  .marquee-wrap:hover .marquee-track{animation-play-state:paused;}
+}
+@keyframes marqueeScroll{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(-50%);}
+}
+
+/* ===== Cursor spotlight (dark dashboard panels) ===== */
+.spotlight{position:relative;overflow:hidden;}
+.spotlight::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:radial-gradient(280px circle at var(--spot-x,50%) var(--spot-y,50%), rgba(201,152,11,0.14), transparent 70%);
+  transition:opacity .3s ease;
+}
+.spotlight:hover::before{opacity:1;}
+
+/* ===== Odometer digit roll ===== */
+.odometer-digit-mask{display:inline-block;overflow:hidden;height:1em;vertical-align:bottom;}
+
+/* ===== Sliding segmented pill (filter tabs) ===== */
+.pill-indicator{position:absolute;top:0;bottom:0;background:#C9980B;z-index:0;transition:left .25s cubic-bezier(.4,0,.2,1), width .25s cubic-bezier(.4,0,.2,1);}
+
+/* ===== Delta badge pulse ===== */
+@media (prefers-reduced-motion: no-preference){
+  .delta-pulse{animation:deltaPulse 2.4s ease-in-out infinite;}
+}
+@keyframes deltaPulse{
+  0%,100%{opacity:1;}
+  50%{opacity:.6;}
+}
+
+/* ===== Notification badge pulse ===== */
+@media (prefers-reduced-motion: no-preference){
+  .notif-badge{animation:notifPulse 1.8s ease-in-out infinite;}
+}
+@keyframes notifPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.12);}
+}

@@ -6,6 +6,9 @@ import heroPoster from '../../assets/images/hero-aircraft-hologram-01.jpg';
 import AuroraBackground from '../AuroraBackground';
 import Blob from '../Blob';
 import MagneticButton from '../MagneticButton';
+import OdometerNumber from '../OdometerNumber';
+import Sparkline from '../Sparkline';
+import RadialGauge from '../RadialGauge';
 
 const HERO_VIDEO_SRC = 'https://videos.pexels.com/video-files/855130/855130-hd_1920_1080_30fps.mp4';
 
@@ -20,11 +23,14 @@ const JOURNEY = [
   { n: '8. REFER', d: 'They refer AnCore to others, fueling mutual growth.', path: 'M3 11l16-6-5 16-3-6-6-2z' },
 ];
 
-function StatCounter({ value, suffix = '', decimals = 0, label }) {
+function StatCounter({ value, suffix = '', decimals = 0, label, trend }) {
   const { ref, display } = useCountUp(value, { suffix, decimals });
   return (
     <div ref={ref}>
-      <div className="text-2xl font-extrabold text-gold">{display}</div>
+      <div className="flex items-end gap-2">
+        <OdometerNumber value={display} className="text-2xl font-extrabold text-gold" />
+        {trend && <Sparkline points={trend} width={44} height={16} />}
+      </div>
       <div className="text-[11px] text-muted font-medium">{label}</div>
     </div>
   );
@@ -124,13 +130,19 @@ export default function Home({ setView, onBook }) {
               <button onClick={() => setView('services')} className="btn-outline px-6 py-3.5 rounded font-semibold text-sm">Explore Services</button>
             </div>
             <p className="text-[11px] uppercase tracking-widest text-muted font-semibold mb-3">Trusted by innovators</p>
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-white font-bold text-sm tracking-wide opacity-60">
-              <span>BOEING</span><span>AIRBUS</span><span>SPACEX</span><span>LOCKHEED MARTIN</span>
+            <div className="marquee-wrap overflow-hidden max-w-md" style={{ maskImage: 'linear-gradient(90deg, transparent, black 12%, black 88%, transparent)' }}>
+              <div className="marquee-track">
+                {[0, 1].map((rep) => (
+                  <div key={rep} className="flex items-center gap-8 pr-8 text-white font-bold text-sm tracking-wide opacity-60 flex-shrink-0">
+                    <span>BOEING</span><span>AIRBUS</span><span>SPACEX</span><span>LOCKHEED MARTIN</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-3 gap-4 mt-8 max-w-md border-t border-line pt-6">
-              <StatCounter value={20} suffix="+" label="Years of Experience" />
-              <StatCounter value={100} suffix="+" label="Projects Completed" />
-              <StatCounter value={98} suffix="%" label="Client Satisfaction" />
+            <div className="grid grid-cols-3 gap-4 mt-8 max-w-md border-t border-line pt-6 items-end">
+              <StatCounter value={20} suffix="+" label="Years of Experience" trend={[0.2, 0.35, 0.3, 0.5, 0.6, 0.75, 0.7, 1]} />
+              <StatCounter value={100} suffix="+" label="Projects Completed" trend={[0.15, 0.3, 0.4, 0.35, 0.55, 0.65, 0.8, 1]} />
+              <RadialGauge value={98} size={64} stroke={5} label="Client Satisfaction" />
             </div>
           </div>
 

@@ -1,6 +1,19 @@
 import SectionHeader from '../SectionHeader';
 import useReveal from '../../hooks/useReveal';
+import useCountUp from '../../hooks/useCountUp';
+import OdometerNumber from '../OdometerNumber';
+import RadialGauge from '../RadialGauge';
 import aboutImage from '../../assets/images/about-aircraft-sunset-01.jpg';
+
+function Stat({ value, suffix, label }) {
+  const { ref, display } = useCountUp(value, { suffix });
+  return (
+    <div ref={ref}>
+      <OdometerNumber value={display} className="text-2xl font-extrabold text-gold" />
+      <div className="text-[11px] text-muted">{label}</div>
+    </div>
+  );
+}
 
 export default function About({ setView }) {
   const textReveal = useReveal(0);
@@ -13,10 +26,10 @@ export default function About({ setView }) {
         <div ref={textReveal.ref} className={`lg:col-span-5 ${textReveal.className}`} style={textReveal.style}>
           <h2 className="font-head text-3xl font-extrabold mb-3">About AnCore</h2>
           <p className="text-muted text-sm mb-6">A team of marketers, strategists and aviation enthusiasts.</p>
-          <div className="grid grid-cols-3 gap-4 panel rounded-xl p-6">
-            <div><div className="text-2xl font-extrabold text-gold">20+</div><div className="text-[11px] text-muted">Years of Experience</div></div>
-            <div><div className="text-2xl font-extrabold text-gold">100+</div><div className="text-[11px] text-muted">Projects Completed</div></div>
-            <div><div className="text-2xl font-extrabold text-gold">98%</div><div className="text-[11px] text-muted">Client Satisfaction</div></div>
+          <div className="grid grid-cols-3 gap-4 panel rounded-xl p-6 items-end">
+            <Stat value={20} suffix="+" label="Years of Experience" />
+            <Stat value={100} suffix="+" label="Projects Completed" />
+            <RadialGauge value={98} size={56} stroke={5} label="Client Satisfaction" />
           </div>
           <button onClick={() => setView('insights')} className="mt-6 btn-outline px-6 py-3 rounded font-semibold text-sm">
             Meet the Team

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SectionHeader from '../SectionHeader';
+import SecureBadge from '../SecureBadge';
 
 const METHODS = ['Credit / Debit Card', 'Bank Transfer', 'PayPal'];
 
@@ -19,7 +20,7 @@ export default function Payment({ setView }) {
             <span className="text-sm font-semibold">{m}</span>
           </label>
         ))}
-        <p className="text-[11px] text-muted pt-2">Your payment is 100% secure.</p>
+        <div className="pt-2"><SecureBadge /></div>
         <button onClick={() => setView('onboarding')} className="w-full btn-gold py-3.5 rounded font-semibold text-sm">Pay Securely</button>
       </div>
 
