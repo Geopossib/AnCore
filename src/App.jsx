@@ -19,6 +19,8 @@ import BookCall from './components/sections/BookCall';
 import Payment from './components/sections/Payment';
 import Onboarding from './components/sections/Onboarding';
 import Portal from './components/sections/Portal';
+import Support from './components/sections/Support';
+import AdminPanel from './components/sections/AdminPanel';
 
 export default function App() {
   const [view, setViewState] = useState('home');
@@ -76,11 +78,13 @@ export default function App() {
           {view === 'payment' && <Payment setView={setView} />}
           {view === 'onboarding' && <Onboarding setView={setView} />}
           {view === 'portal' && <Portal setView={setView} />}
+          {view === 'support' && <Support setView={setView} showToast={showToast} />}
+          {view === 'admin' && <AdminPanel setView={setView} />}
         </div>
       </main>
 
       <FeatureBar />
-      <Footer />
+      <Footer setView={setView} />
 
       <BookingModal open={bookingOpen} onClose={closeBooking} onSubmit={handleBookingSubmit} />
       <CaseStudyModal open={!!caseStudy} type={caseStudy} onClose={closeCaseStudy} onBook={() => { closeCaseStudy(); openBooking(); }} />

@@ -28,11 +28,15 @@ export default function FAQ({ setView }) {
       <SectionHeader num="07" label="FAQ" />
       <h2 className="font-head text-3xl font-extrabold mb-8">Frequently Asked Questions</h2>
 
-      <div className="max-w-2xl space-y-3 mb-10">
+      <div className="max-w-2xl space-y-3 mb-6">
         {FAQS.map((item, i) => (
           <FaqItem key={item.q} item={item} delay={i * 0.08} />
         ))}
       </div>
+      <p className="text-muted text-sm mb-10">
+        Didn&apos;t find your answer?{' '}
+        <button onClick={() => setView('support')} className="text-gold font-semibold hover:underline">Submit a request →</button>
+      </p>
 
       <div className="flex justify-between">
         <button onClick={() => setView('contact')} className="text-sm font-semibold text-muted">← Contact</button>
