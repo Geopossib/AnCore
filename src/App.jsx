@@ -53,7 +53,7 @@ export default function App() {
     setBookingOpen(false);
   }
   function handleBookingSubmit() {
-    showToast('Strategy call scheduled — confirmation sent to your email.');
+    showToast('Opening GitHub to confirm your booking request…');
     setBookingOpen(false);
   }
 

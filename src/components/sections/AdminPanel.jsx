@@ -3,6 +3,7 @@ import SectionHeader from '../SectionHeader';
 
 const REPO_API = 'https://api.github.com/repos/Geopossib/AnCore';
 const ADMIN_PASSCODE = 'ancore-admin'; // UI convenience only — see note below, not real security.
+const TICKET_LABELS = ['support-request', 'booking-request'];
 
 function timeAgo(dateStr) {
   const diffMs = Date.now() - new Date(dateStr).getTime();
@@ -14,20 +15,30 @@ function timeAgo(dateStr) {
   return `${days}d ago`;
 }
 
+function ticketType(issue) {
+  const names = (issue.labels || []).map((l) => (typeof l === 'string' ? l : l.name));
+  if (names.includes('booking-request')) return { label: 'Booking', color: 'text-gold' };
+  return { label: 'Support', color: 'text-white' };
+}
+
 function TicketCard({ issue }) {
   const isOpen = issue.state === 'open';
+  const type = ticketType(issue);
   return (
     <div className="panel rounded-xl p-5 hover-lift">
       <div className="flex items-start justify-between gap-3 mb-2">
-        <h4 className="font-bold text-sm leading-snug">{issue.title}</h4>
+        <div>
+          <span className={`text-[9px] font-bold uppercase tracking-widest ${type.color}`}>{type.label}</span>
+          <h4 className="font-bold text-sm leading-snug">{issue.title}</h4>
+        </div>
         <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded flex-shrink-0 ${isOpen ? 'bg-gold text-navy' : 'bg-surface2 text-muted'}`}>
           {issue.state}
         </span>
       </div>
-      <p className="text-xs text-muted mb-3 line-clamp-3" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+      <p className="text-xs text-muted mb-3" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
         {issue.body ? issue.body.replace(/\*\*/g, '').slice(0, 220) : 'No description provided.'}
       </p>
-      <div className="flex items-center justify-between text-[11px] text-muted">
+      <div className="flex items-center justify-between text-[11px] text-muted flex-wrap gap-2">
         <span>#{issue.number} · opened by {issue.user?.login} · {timeAgo(issue.created_at)} · {issue.comments} repl{issue.comments === 1 ? 'y' : 'ies'}</span>
         <a href={issue.html_url} target="_blank" rel="noopener noreferrer" className="text-gold font-semibold hover:underline">
           Respond on GitHub →
@@ -49,13 +60,21 @@ export default function AdminPanel({ setView }) {
   useEffect(() => {
     if (!unlocked) return;
     setStatus('loading');
-    fetch(`${REPO_API}/issues?state=all&labels=support-request&per_page=50`)
-      .then((res) => {
-        if (!res.ok) throw new Error('GitHub API request failed');
-        return res.json();
-      })
-      .then((data) => {
-        setIssues(Array.isArray(data) ? data : []);
+    Promise.all(
+      TICKET_LABELS.map((label) =>
+        fetch(`${REPO_API}/issues?state=all&labels=${label}&per_page=50`).then((res) => {
+          if (!res.ok) throw new Error('GitHub API request failed');
+          return res.json();
+        })
+      )
+    )
+      .then((results) => {
+        const merged = new Map();
+        results.flat().forEach((issue) => merged.set(issue.id, issue));
+        const combined = Array.from(merged.values()).sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+        setIssues(combined);
         setStatus('loaded');
       })
       .catch(() => setStatus('error'));
@@ -111,7 +130,7 @@ export default function AdminPanel({ setView }) {
       <SectionHeader num="14" label="Admin Panel" />
       <div className="flex items-center justify-between flex-wrap gap-4 mb-2">
         <h2 className="font-head text-3xl font-extrabold flex items-center gap-3">
-          Support Tickets
+          Tickets &amp; Requests
           {openCount > 0 && (
             <span className="notif-badge inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-gold text-navy text-[11px] font-bold">
               {openCount}
@@ -121,8 +140,9 @@ export default function AdminPanel({ setView }) {
         <span className="text-xs text-muted">{openCount} open · {issues.length} total</span>
       </div>
       <p className="text-muted text-sm mb-6 max-w-lg">
-        Live tickets filed through the Support form, pulled directly from the GitHub Issues tracker. Reply, label, or
-        close them straight on GitHub — this panel is a fast read-only view for triage.
+        Booking requests and support complaints filed through the site, pulled directly from the GitHub Issues
+        tracker — one unified queue. Reply, label, or close them straight on GitHub; this panel is a fast read-only
+        view for triage.
       </p>
 
       <div ref={tabsRef} className="relative inline-flex gap-1 mb-6 p-1 panel rounded">
