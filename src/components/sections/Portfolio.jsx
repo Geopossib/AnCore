@@ -1,5 +1,6 @@
 import SectionHeader from '../SectionHeader';
 import useReveal from '../../hooks/useReveal';
+import TiltCard from '../TiltCard';
 
 const CASES = [
   { type: 'mfg', img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80', alt: 'Titanium turbine components for commercial aircraft engines on a manufacturing line', title: 'Aerospace Component Manufacturer', stat: '+156% Qualified Leads' },
@@ -11,17 +12,17 @@ const CASES = [
 function CaseCard({ item, delay, onOpen }) {
   const { ref, className, style } = useReveal(delay);
   return (
-    <div
-      ref={ref}
-      className={`panel rounded-xl overflow-hidden cursor-pointer hover-lift ${className}`}
-      style={style}
-      onClick={() => onOpen(item.type)}
-    >
-      <img src={item.img} className="w-full h-28 object-cover" alt={item.alt} loading="lazy" />
-      <div className="p-5">
-        <h4 className="font-bold text-sm mb-1">{item.title}</h4>
-        <p className="text-gold text-xs font-bold">{item.stat}</p>
-      </div>
+    <div ref={ref} className={className} style={style}>
+      <TiltCard
+        className="panel rounded-xl overflow-hidden cursor-pointer"
+        onClick={() => onOpen(item.type)}
+      >
+        <img src={item.img} className="w-full h-28 object-cover" alt={item.alt} loading="lazy" />
+        <div className="p-5">
+          <h4 className="font-bold text-sm mb-1">{item.title}</h4>
+          <p className="text-gold text-xs font-bold">{item.stat}</p>
+        </div>
+      </TiltCard>
     </div>
   );
 }

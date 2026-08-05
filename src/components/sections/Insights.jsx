@@ -1,5 +1,6 @@
 import SectionHeader from '../SectionHeader';
 import useReveal from '../../hooks/useReveal';
+import TiltCard from '../TiltCard';
 import insightsChartImage from '../../assets/images/insights-future-aerospace-marketing-01.jpg';
 
 const ARTICLES = [
@@ -24,9 +25,11 @@ const ARTICLES = [
 function ArticleCard({ article, delay, onOpen }) {
   const { ref, className, style } = useReveal(delay);
   return (
-    <div ref={ref} className={`panel rounded-xl overflow-hidden cursor-pointer hover-lift ${className}`} style={style} onClick={() => onOpen(article.title)}>
-      <img src={article.img} className="w-full h-28 object-cover" alt={article.alt} loading="lazy" />
-      <div className="p-4"><h4 className="font-bold text-sm">{article.title}</h4></div>
+    <div ref={ref} className={className} style={style}>
+      <TiltCard className="panel rounded-xl overflow-hidden cursor-pointer" onClick={() => onOpen(article.title)}>
+        <img src={article.img} className="w-full h-28 object-cover" alt={article.alt} loading="lazy" />
+        <div className="p-4"><h4 className="font-bold text-sm">{article.title}</h4></div>
+      </TiltCard>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import SectionHeader from '../SectionHeader';
 import useCountUp from '../../hooks/useCountUp';
 import useReveal from '../../hooks/useReveal';
 import useReducedMotion from '../../hooks/useReducedMotion';
+import Blob from '../Blob';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></> },
@@ -77,7 +78,9 @@ export default function Portal({ setView }) {
   const chartReveal = useReveal(0.1);
 
   return (
-    <section className="view-section py-20">
+    <section className="view-section py-20 relative overflow-hidden">
+      <Blob className="w-80 h-80 top-10 -right-24 opacity-60" style={{ animationDelay: '1.5s' }} />
+      <div className="relative z-10">
       <SectionHeader num="12" label="Client Portal" />
       <h2 className="font-head text-3xl font-extrabold mb-2">Your Project Hub</h2>
       <p className="text-muted text-sm mb-8 max-w-md">Collaborate, track progress and access everything in one place.</p>
@@ -112,6 +115,7 @@ export default function Portal({ setView }) {
       <div className="flex justify-between mt-10">
         <button onClick={() => setView('onboarding')} className="text-sm font-semibold text-muted">← Client Onboarding</button>
         <button onClick={() => setView('home')} className="text-sm font-semibold text-gold">Back to Homepage →</button>
+      </div>
       </div>
     </section>
   );

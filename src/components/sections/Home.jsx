@@ -3,6 +3,9 @@ import useReveal from '../../hooks/useReveal';
 import useCountUp from '../../hooks/useCountUp';
 import useReducedMotion from '../../hooks/useReducedMotion';
 import heroPoster from '../../assets/images/hero-aircraft-hologram-01.jpg';
+import AuroraBackground from '../AuroraBackground';
+import Blob from '../Blob';
+import MagneticButton from '../MagneticButton';
 
 const HERO_VIDEO_SRC = 'https://videos.pexels.com/video-files/855130/855130-hd_1920_1080_30fps.mp4';
 
@@ -29,6 +32,7 @@ function StatCounter({ value, suffix = '', decimals = 0, label }) {
 
 function HeroVideo() {
   const videoRef = useRef(null);
+  const wrapRef = useRef(null);
   const [videoFailed, setVideoFailed] = useState(false);
   const reducedMotion = useReducedMotion();
 
@@ -42,8 +46,30 @@ function HeroVideo() {
     });
   }, [reducedMotion]);
 
+  // Light scroll parallax: the media layer drifts a touch slower than the page.
+  useEffect(() => {
+    if (reducedMotion) return;
+    const el = wrapRef.current;
+    if (!el) return;
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        const offset = (window.innerHeight / 2 - (rect.top + rect.height / 2)) * 0.06;
+        const clamped = Math.max(-14, Math.min(14, offset));
+        el.style.transform = `translateY(${clamped}px)`;
+        ticking = false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [reducedMotion]);
+
   return (
-    <div className="relative w-full h-56 bg-navy">
+    <div ref={wrapRef} className="relative w-full h-56 bg-navy" style={{ willChange: 'transform' }}>
       {!videoFailed && !reducedMotion && (
         <video
           ref={videoRef}
@@ -75,61 +101,69 @@ export default function Home({ setView, onBook }) {
   const heroRight = useReveal(0.12);
 
   return (
-    <section className="view-section py-20">
-      <SectionHeaderInline />
+    <section className="view-section py-20 relative overflow-hidden">
+      <AuroraBackground />
+      <Blob className="w-72 h-72 -top-10 -left-16" />
+      <Blob className="w-64 h-64 bottom-0 right-0" style={{ animationDelay: '3s' }} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-        <div ref={heroLeft.ref} className={heroLeft.className} style={{ ...heroLeft.style }}>
-          <h1 className="font-head text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.12] mb-6">
-            Elevating Aerospace &amp; Aviation Brands to <span className="text-gold">New Heights</span>
-          </h1>
-          <p className="text-muted text-base leading-relaxed mb-8 max-w-lg">
-            Data-driven marketing strategies designed for aerospace, aviation, engineering and tech innovators.
-          </p>
-          <div className="flex flex-wrap gap-3 mb-10">
-            <button onClick={onBook} className="btn-gold px-6 py-3.5 rounded font-semibold text-sm">Book a Strategy Call</button>
-            <button onClick={() => setView('services')} className="btn-outline px-6 py-3.5 rounded font-semibold text-sm">Explore Services</button>
-          </div>
-          <p className="text-[11px] uppercase tracking-widest text-muted font-semibold mb-3">Trusted by innovators</p>
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-white font-bold text-sm tracking-wide opacity-60">
-            <span>BOEING</span><span>AIRBUS</span><span>SPACEX</span><span>LOCKHEED MARTIN</span>
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-8 max-w-md border-t border-line pt-6">
-            <StatCounter value={20} suffix="+" label="Years of Experience" />
-            <StatCounter value={100} suffix="+" label="Projects Completed" />
-            <StatCounter value={98} suffix="%" label="Client Satisfaction" />
-          </div>
-        </div>
+      <div className="relative z-10">
+        <SectionHeaderInline />
 
-        <div ref={heroRight.ref} className={heroRight.className} style={{ ...heroRight.style }}>
-          <div className="rounded-xl overflow-hidden panel hover-lift">
-            {/* file: hero-aircraft-hologram-01.jpg (poster/fallback) */}
-            <HeroVideo />
-            <div className="p-6">
-              <h3 className="font-head text-xl font-bold leading-snug mb-2">Elevating Aerospace &amp; Aviation Brands to New Heights</h3>
-              <p className="text-muted text-xs mb-4">Data-driven marketing strategies for aerospace and aviation innovators.</p>
-              <div className="flex gap-2">
-                <span className="btn-gold px-4 py-2 rounded text-xs font-semibold">Book a Strategy Call</span>
-                <span className="btn-outline px-4 py-2 rounded text-xs font-semibold">Explore Services</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div ref={heroLeft.ref} className={heroLeft.className} style={{ ...heroLeft.style }}>
+            <h1 className="font-head text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.12] mb-6">
+              Elevating Aerospace &amp; Aviation Brands to <span className="text-gold">New Heights</span>
+            </h1>
+            <p className="text-muted text-base leading-relaxed mb-8 max-w-lg">
+              Data-driven marketing strategies designed for aerospace, aviation, engineering and tech innovators.
+            </p>
+            <div className="flex flex-wrap gap-3 mb-10">
+              <MagneticButton onClick={onBook} className="btn-gold px-6 py-3.5 rounded font-semibold text-sm">
+                Book a Strategy Call
+              </MagneticButton>
+              <button onClick={() => setView('services')} className="btn-outline px-6 py-3.5 rounded font-semibold text-sm">Explore Services</button>
+            </div>
+            <p className="text-[11px] uppercase tracking-widest text-muted font-semibold mb-3">Trusted by innovators</p>
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-white font-bold text-sm tracking-wide opacity-60">
+              <span>BOEING</span><span>AIRBUS</span><span>SPACEX</span><span>LOCKHEED MARTIN</span>
+            </div>
+            <div className="grid grid-cols-3 gap-4 mt-8 max-w-md border-t border-line pt-6">
+              <StatCounter value={20} suffix="+" label="Years of Experience" />
+              <StatCounter value={100} suffix="+" label="Projects Completed" />
+              <StatCounter value={98} suffix="%" label="Client Satisfaction" />
+            </div>
+          </div>
+
+          <div ref={heroRight.ref} className={heroRight.className} style={{ ...heroRight.style }}>
+            <div className="rounded-xl overflow-hidden panel hover-lift">
+              {/* file: hero-aircraft-hologram-01.jpg (poster/fallback) */}
+              <HeroVideo />
+              <div className="p-6">
+                <h3 className="font-head text-xl font-bold leading-snug mb-2">Elevating Aerospace &amp; Aviation Brands to New Heights</h3>
+                <p className="text-muted text-xs mb-4">Data-driven marketing strategies for aerospace and aviation innovators.</p>
+                <div className="flex gap-2">
+                  <span className="btn-gold px-4 py-2 rounded text-xs font-semibold">Book a Strategy Call</span>
+                  <span className="btn-outline px-4 py-2 rounded text-xs font-semibold">Explore Services</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-24">
-        <h2 className="font-head text-center text-2xl font-extrabold tracking-tight mb-12">The Client Journey</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
-          {JOURNEY.map((step, i) => (
-            <JourneyStep key={step.n} step={step} delay={i * 0.08} />
-          ))}
+        <div className="mt-24">
+          <h2 className="font-head text-center text-2xl font-extrabold tracking-tight mb-12">The Client Journey</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
+            {JOURNEY.map((step, i) => (
+              <JourneyStep key={step.n} step={step} delay={i * 0.08} bobDelay={i * 0.3} />
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="mt-16 flex justify-end">
-        <button onClick={() => setView('services')} className="text-sm font-semibold text-gold flex items-center gap-1">
-          Next: Services →
-        </button>
+        <div className="mt-16 flex justify-end">
+          <button onClick={() => setView('services')} className="text-sm font-semibold text-gold flex items-center gap-1">
+            Next: Services →
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -144,11 +178,14 @@ function SectionHeaderInline() {
   );
 }
 
-function JourneyStep({ step, delay }) {
+function JourneyStep({ step, delay, bobDelay }) {
   const { ref, className, style } = useReveal(delay);
   return (
     <div ref={ref} className={`text-center ${className}`} style={style}>
-      <div className="icon-ring w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-3">
+      <div
+        className="icon-ring float-soft w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-3"
+        style={{ animationDelay: `${bobDelay}s` }}
+      >
         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
           <path strokeLinecap="round" strokeLinejoin="round" d={step.path} />
         </svg>

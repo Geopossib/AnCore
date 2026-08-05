@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import SweepWipe from './components/SweepWipe';
+import useReducedMotion from './hooks/useReducedMotion';
 import Header from './components/Header';
 import FeatureBar from './components/FeatureBar';
 import Footer from './components/Footer';
@@ -25,6 +27,8 @@ import AdminPanel from './components/sections/AdminPanel';
 export default function App() {
   const [view, setViewState] = useState('home');
   const [transitioning, setTransitioning] = useState(false);
+  const [sweeping, setSweeping] = useState(false);
+  const reducedMotion = useReducedMotion();
   const { toasts, showToast } = useToast();
 
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -33,11 +37,13 @@ export default function App() {
   function setView(next) {
     if (next === view) return;
     setTransitioning(true);
+    if (!reducedMotion) setSweeping(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => {
       setViewState(next);
       setTransitioning(false);
     }, 180);
+    setTimeout(() => setSweeping(false), 600);
   }
 
   function openBooking() {
@@ -62,6 +68,7 @@ export default function App() {
 
   return (
     <>
+      <SweepWipe active={sweeping} />
       <Header view={view} setView={setView} onBook={openBooking} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

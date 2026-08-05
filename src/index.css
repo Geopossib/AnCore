@@ -66,3 +66,84 @@ header.scrolled .header-inner{height:64px;}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
 }
+
+/* ===== Aurora gradient background (hero only) ===== */
+.aurora{position:absolute;inset:-20%;pointer-events:none;opacity:0.35;filter:blur(60px);z-index:0;}
+.aurora::before,.aurora::after{content:"";position:absolute;border-radius:9999px;}
+.aurora::before{
+  width:55%;height:55%;top:0;left:5%;
+  background:radial-gradient(circle, rgba(201,152,11,0.55), transparent 70%);
+}
+.aurora::after{
+  width:60%;height:60%;bottom:-10%;right:0;
+  background:radial-gradient(circle, rgba(18,42,92,0.7), transparent 70%);
+}
+@media (prefers-reduced-motion: no-preference){
+  .aurora::before{animation:auroraDrift1 16s ease-in-out infinite;}
+  .aurora::after{animation:auroraDrift2 20s ease-in-out infinite;}
+}
+@keyframes auroraDrift1{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(6%,8%) scale(1.12);}
+}
+@keyframes auroraDrift2{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(-8%,-6%) scale(1.08);}
+}
+
+/* ===== Morphing blob ===== */
+.blob{position:absolute;pointer-events:none;z-index:0;background:linear-gradient(135deg, rgba(201,152,11,0.18), rgba(18,42,92,0.4));filter:blur(2px);}
+@media (prefers-reduced-motion: no-preference){
+  .blob{animation:blobMorph 12s ease-in-out infinite;}
+}
+@keyframes blobMorph{
+  0%,100%{border-radius:42% 58% 63% 37% / 41% 44% 56% 59%;transform:rotate(0deg) scale(1);}
+  33%{border-radius:63% 37% 41% 59% / 51% 62% 38% 49%;transform:rotate(6deg) scale(1.05);}
+  66%{border-radius:37% 63% 55% 45% / 60% 40% 60% 40%;transform:rotate(-4deg) scale(0.97);}
+}
+
+/* ===== Floating bob (icon rings, journey steps) ===== */
+@media (prefers-reduced-motion: no-preference){
+  .float-soft{animation:floatSoft 4.5s ease-in-out infinite;}
+}
+@keyframes floatSoft{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+
+/* ===== Glassmorphism — scoped to header (scrolled) + modal chrome only ===== */
+header.scrolled{
+  background-color:rgba(2,23,57,0.72);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+}
+.glass-modal{
+  background:rgba(11,35,80,0.72);
+  backdrop-filter:blur(20px) saturate(150%);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);
+  border:1px solid rgba(201,152,11,0.28);
+}
+
+/* ===== Gold sweep-wipe (page transition accent) ===== */
+.sweep-wipe{
+  position:fixed;top:0;left:0;height:100%;width:38%;
+  background:linear-gradient(90deg, transparent, rgba(201,152,11,0.85), transparent);
+  z-index:80;pointer-events:none;
+  transform:translateX(-120%);
+}
+@media (prefers-reduced-motion: no-preference){
+  .sweep-wipe.sweep-active{animation:sweepAcross .55s cubic-bezier(.4,0,.2,1);}
+}
+@keyframes sweepAcross{
+  0%{transform:translateX(-120%);}
+  100%{transform:translateX(320%);}
+}
+
+/* ===== Logo SVG draw-in ===== */
+.logo-draw{stroke-dasharray:var(--logo-len,120);stroke-dashoffset:var(--logo-len,120);}
+@media (prefers-reduced-motion: no-preference){
+  .logo-draw.drawn{transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);stroke-dashoffset:0;}
+}
+@media (prefers-reduced-motion: reduce){
+  .logo-draw{stroke-dashoffset:0;}
+}
