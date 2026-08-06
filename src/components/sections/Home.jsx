@@ -116,7 +116,7 @@ export default function Home({ setView, onBook }) {
         <SectionHeaderInline />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <div ref={heroLeft.ref} className={heroLeft.className} style={{ ...heroLeft.style }}>
+          <div ref={heroLeft.ref} className={`lg:col-span-6 order-2 lg:order-1 ${heroLeft.className}`} style={{ ...heroLeft.style }}>
             <h1 className="font-head text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.12] mb-6">
               Elevating Aerospace &amp; Aviation Brands to <span className="text-gold">New Heights</span>
             </h1>
@@ -146,7 +146,7 @@ export default function Home({ setView, onBook }) {
             </div>
           </div>
 
-          <div ref={heroRight.ref} className={heroRight.className} style={{ ...heroRight.style }}>
+          <div ref={heroRight.ref} className={`lg:col-span-6 order-1 lg:order-2 ${heroRight.className}`} style={{ ...heroRight.style }}>
             <div className="rounded-xl overflow-hidden panel hover-lift">
               {/* file: hero-aircraft-hologram-01.jpg (poster/fallback) */}
               <HeroVideo />
