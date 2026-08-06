@@ -3,6 +3,7 @@ import useTyping from '../hooks/useTyping';
 import useHeaderScroll from '../hooks/useHeaderScroll';
 import MagneticButton from './MagneticButton';
 import useReducedMotion from '../hooks/useReducedMotion';
+import logoMark from '../assets/images/logo-mark-01.png';
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Home' },
@@ -19,18 +20,7 @@ export default function Header({ view, setView, onBook }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navRef = useRef(null);
   const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 });
-  const logoStrokeRef = useRef(null);
   const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    const path = logoStrokeRef.current;
-    if (!path || reducedMotion) return;
-    const length = path.getTotalLength();
-    path.style.setProperty('--logo-len', length);
-    requestAnimationFrame(() => {
-      path.classList.add('drawn');
-    });
-  }, [reducedMotion]);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -68,18 +58,11 @@ export default function Header({ view, setView, onBook }) {
     <header className={`sticky top-0 z-50 bg-navy/95 backdrop-blur border-b border-line${scrolled ? ' scrolled' : ''}`} id="siteHeader">
       <div className="header-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <button onClick={() => go('home')} className="flex items-center space-x-3">
-          <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
-            <path
-              ref={logoStrokeRef}
-              className="logo-draw"
-              d="M20 3 L36 34 L20 27 L4 34 Z"
-              fill="none"
-              stroke="#C9980B"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-            />
-            <path d="M20 3 L36 34 L20 27 L4 34 Z" fill="#C9980B" opacity={reducedMotion ? 1 : 0.92} />
-          </svg>
+          <img
+            src={logoMark}
+            alt="AnCore Marketing logo mark"
+            className={`h-9 w-auto${reducedMotion ? '' : ' logo-pop'}`}
+          />
           <div className="text-left">
             <span className="font-head text-lg font-extrabold tracking-tight leading-none block">
               {brandText}

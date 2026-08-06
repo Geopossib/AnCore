@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import SectionHeader from '../SectionHeader';
 
 const REPO_API = 'https://api.github.com/repos/Geopossib/AnCore';
-const ADMIN_PASSCODE = 'ancore-admin'; // UI convenience only — see note below, not real security.
 const TICKET_LABELS = ['support-request', 'booking-request'];
 
 function timeAgo(dateStr) {
@@ -51,6 +50,8 @@ function TicketCard({ issue }) {
 export default function AdminPanel({ setView }) {
   const [unlocked, setUnlocked] = useState(false);
   const [passInput, setPassInput] = useState('');
+  const [authStatus, setAuthStatus] = useState('idle'); // idle | checking | error
+  const [authError, setAuthError] = useState('');
   const [issues, setIssues] = useState([]);
   const [status, setStatus] = useState('idle'); // idle | loading | error | loaded
   const [filter, setFilter] = useState('open');
@@ -100,13 +101,32 @@ export default function AdminPanel({ setView }) {
         <div className="panel rounded-xl p-8 max-w-sm">
           <h2 className="font-head text-xl font-extrabold mb-2">Admin Access</h2>
           <p className="text-muted text-xs mb-4">
-            This gate is a UI convenience only — the ticket data underneath is public GitHub issue data, not secured
-            by this passcode. Don&apos;t rely on it to protect anything sensitive.
+            The passcode is checked server-side and never ships in the site&apos;s code. That said, the ticket data
+            underneath is public GitHub issue data either way — this gate keeps casual visitors out, it&apos;s not
+            protecting anything sensitive.
           </p>
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              if (passInput === ADMIN_PASSCODE) setUnlocked(true);
+              setAuthStatus('checking');
+              setAuthError('');
+              try {
+                const res = await fetch('/api/admin-auth', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ passcode: passInput }),
+                });
+                const data = await res.json();
+                if (res.ok && data.ok) {
+                  setUnlocked(true);
+                } else {
+                  setAuthStatus('error');
+                  setAuthError(data.error || 'Incorrect passcode.');
+                }
+              } catch {
+                setAuthStatus('error');
+                setAuthError('Could not reach the server. Try again in a moment.');
+              }
             }}
             className="space-y-3"
           >
@@ -117,7 +137,10 @@ export default function AdminPanel({ setView }) {
               onChange={(e) => setPassInput(e.target.value)}
               className="w-full px-4 py-3 rounded text-sm"
             />
-            <button type="submit" className="w-full btn-gold py-3 rounded font-semibold text-sm">Enter</button>
+            {authStatus === 'error' && <p className="text-[11px] text-red-400">{authError}</p>}
+            <button type="submit" disabled={authStatus === 'checking'} className="w-full btn-gold py-3 rounded font-semibold text-sm disabled:opacity-60">
+              {authStatus === 'checking' ? 'Checking…' : 'Enter'}
+            </button>
           </form>
         </div>
         <button onClick={() => setView('support')} className="text-sm font-semibold text-muted mt-8 block">← Back to Support</button>
