@@ -41,6 +41,50 @@ src/
   index.css             Design tokens & component classes (Tailwind + custom)
 ```
 
+## Server (API routes) & required setup
+
+This app now includes real serverless backend endpoints under `/api` —
+Support and Booking submissions no longer redirect to GitHub; they're
+stored on a real server and read back by the Admin Panel.
+
+**Required for this to work in production:**
+
+1. **Add a Redis integration in Vercel.** Project → Settings → Integrations
+   → Marketplace → search "Redis" (Upstash is the standard option, free
+   tier available) → connect it to this project. This automatically injects
+   the `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` (or `KV_REST_API_URL`
+   / `KV_REST_API_TOKEN`) environment variables the API routes read from —
+   you don't need to copy these manually.
+
+2. **Set two environment variables** in Project → Settings → Environment Variables:
+
+   | Key | Value |
+   |---|---|
+   | `ADMIN_PASSCODE` | Your own passcode for the Admin Panel login |
+   | `ADMIN_SESSION_SECRET` | Any long random string (used to sign admin session tokens) |
+
+   Neither of these should ever be committed to the repo — they only live
+   in Vercel's environment variable store.
+
+3. Redeploy after adding these (Vercel usually prompts you to).
+
+**API routes:**
+
+```
+api/
+  admin-auth.js       POST — checks ADMIN_PASSCODE server-side, returns a
+                       signed session token (2-hour expiry) on success
+  submit-request.js   POST — public, saves a support or booking ticket to Redis
+  tickets.js          GET  — admin-only (Bearer token), lists all tickets
+  ticket-update.js    POST — admin-only, mark resolved/reopen or add a note
+  _lib/redis.js        Shared Redis client
+  _lib/session.js       Session token issue/verify helpers
+```
+
+**Local development note:** `npm run dev` (plain Vite) does not run `/api`
+routes — only the frontend. To test the full stack locally, use the
+[Vercel CLI](https://vercel.com/docs/cli): `vercel dev`.
+
 ## Hero background video
 
 The homepage hero plays a muted, looping aircraft-takeoff clip hosted on

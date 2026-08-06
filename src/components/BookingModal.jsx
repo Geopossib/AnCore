@@ -1,27 +1,34 @@
 import { useState } from 'react';
 
-const REPO_URL = 'https://github.com/Geopossib/AnCore';
-
-function buildBookingIssueUrl({ name, email }) {
-  const title = encodeURIComponent(`[Strategy Call] Booking request from ${name}`);
-  const body = encodeURIComponent(
-    `**Name:** ${name}\n**Email:** ${email}\n\n---\n\nRequesting a complimentary 30-minute strategy call / growth audit.`
-  );
-  const label = encodeURIComponent('booking-request');
-  return `${REPO_URL}/issues/new?title=${title}&body=${body}&labels=${label}`;
-}
-
 export default function BookingModal({ open, onClose, onSubmit }) {
   const [form, setForm] = useState({ name: '', email: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   if (!open) return null;
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const url = buildBookingIssueUrl(form);
-    window.open(url, '_blank', 'noopener,noreferrer');
-    onSubmit();
-    setForm({ name: '', email: '' });
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await fetch('/api/submit-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'booking', ...form }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        onSubmit();
+        setForm({ name: '', email: '' });
+      } else {
+        setError(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      setError('Could not reach the server. Please try again shortly.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -46,10 +53,10 @@ export default function BookingModal({ open, onClose, onSubmit }) {
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full px-4 py-3 rounded text-sm"
           />
-          <button type="submit" className="w-full btn-gold py-3.5 rounded font-semibold text-sm">Confirm Booking</button>
-          <p className="text-[10px] text-muted text-center pt-1">
-            You&apos;ll be prompted to finish this on GitHub — that&apos;s what actually files and confirms the request.
-          </p>
+          {error && <p className="text-[11px] text-red-400">{error}</p>}
+          <button type="submit" disabled={submitting} className="w-full btn-gold py-3.5 rounded font-semibold text-sm disabled:opacity-60">
+            {submitting ? 'Sending…' : 'Confirm Booking'}
+          </button>
         </form>
       </div>
     </div>

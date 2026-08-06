@@ -23,6 +23,7 @@ import Onboarding from './components/sections/Onboarding';
 import Portal from './components/sections/Portal';
 import Support from './components/sections/Support';
 import AdminPanel from './components/sections/AdminPanel';
+import BlogPost from './components/sections/BlogPost';
 
 export default function App() {
   const [view, setViewState] = useState('home');
@@ -33,6 +34,7 @@ export default function App() {
 
   const [bookingOpen, setBookingOpen] = useState(false);
   const [caseStudy, setCaseStudy] = useState(null);
+  const [activePostSlug, setActivePostSlug] = useState(null);
 
   function setView(next) {
     if (next === view) return;
@@ -53,7 +55,7 @@ export default function App() {
     setBookingOpen(false);
   }
   function handleBookingSubmit() {
-    showToast('Opening GitHub to confirm your booking request…');
+    showToast('Booking request received — our team will follow up by email shortly.');
     setBookingOpen(false);
   }
 
@@ -62,6 +64,11 @@ export default function App() {
   }
   function closeCaseStudy() {
     setCaseStudy(null);
+  }
+
+  function openPost(slug) {
+    setActivePostSlug(slug);
+    setView('blog-post');
   }
 
   const sectionClass = `view-section${transitioning ? ' view-leaving' : ''}`;
@@ -77,7 +84,8 @@ export default function App() {
           {view === 'services' && <Services setView={setView} />}
           {view === 'portfolio' && <Portfolio setView={setView} onOpenCase={openCaseStudy} />}
           {view === 'about' && <About setView={setView} />}
-          {view === 'insights' && <Insights setView={setView} onOpenBlog={(title) => showToast(`Opening article: "${title}"`)} />}
+          {view === 'insights' && <Insights setView={setView} onOpenPost={openPost} />}
+          {view === 'blog-post' && <BlogPost slug={activePostSlug} setView={setView} onOpenPost={openPost} />}
           {view === 'contact' && <Contact setView={setView} showToast={showToast} />}
           {view === 'faq' && <FAQ setView={setView} />}
           {view === 'newsletter' && <Newsletter setView={setView} showToast={showToast} />}

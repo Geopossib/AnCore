@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import SectionHeader from '../SectionHeader';
 
-const REPO_API = 'https://api.github.com/repos/Geopossib/AnCore';
-const TICKET_LABELS = ['support-request', 'booking-request'];
-
 function timeAgo(dateStr) {
   const diffMs = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diffMs / 60000);
@@ -14,35 +11,88 @@ function timeAgo(dateStr) {
   return `${days}d ago`;
 }
 
-function ticketType(issue) {
-  const names = (issue.labels || []).map((l) => (typeof l === 'string' ? l : l.name));
-  if (names.includes('booking-request')) return { label: 'Booking', color: 'text-gold' };
-  return { label: 'Support', color: 'text-white' };
-}
+function TicketCard({ ticket, token, onUpdated }) {
+  const [noteInput, setNoteInput] = useState('');
+  const [busy, setBusy] = useState(false);
+  const isOpen = ticket.status === 'open';
+  const isBooking = ticket.type === 'booking';
 
-function TicketCard({ issue }) {
-  const isOpen = issue.state === 'open';
-  const type = ticketType(issue);
+  async function update(patch) {
+    setBusy(true);
+    try {
+      const res = await fetch('/api/ticket-update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ id: ticket.id, ...patch }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) onUpdated(data.ticket);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="panel rounded-xl p-5 hover-lift">
       <div className="flex items-start justify-between gap-3 mb-2">
         <div>
-          <span className={`text-[9px] font-bold uppercase tracking-widest ${type.color}`}>{type.label}</span>
-          <h4 className="font-bold text-sm leading-snug">{issue.title}</h4>
+          <span className={`text-[9px] font-bold uppercase tracking-widest ${isBooking ? 'text-gold' : 'text-white'}`}>
+            {isBooking ? 'Booking' : 'Support'}
+          </span>
+          <h4 className="font-bold text-sm leading-snug">
+            {isBooking ? `Strategy call — ${ticket.name}` : ticket.category || 'General Request'}
+          </h4>
         </div>
         <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded flex-shrink-0 ${isOpen ? 'bg-gold text-navy' : 'bg-surface2 text-muted'}`}>
-          {issue.state}
+          {ticket.status}
         </span>
       </div>
-      <p className="text-xs text-muted mb-3" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-        {issue.body ? issue.body.replace(/\*\*/g, '').slice(0, 220) : 'No description provided.'}
+
+      <p className="text-xs text-muted mb-2">
+        <span className="text-white font-semibold">{ticket.name}</span> · {ticket.email}
       </p>
-      <div className="flex items-center justify-between text-[11px] text-muted flex-wrap gap-2">
-        <span>#{issue.number} · opened by {issue.user?.login} · {timeAgo(issue.created_at)} · {issue.comments} repl{issue.comments === 1 ? 'y' : 'ies'}</span>
-        <a href={issue.html_url} target="_blank" rel="noopener noreferrer" className="text-gold font-semibold hover:underline">
-          Respond on GitHub →
-        </a>
+      {ticket.message && <p className="text-xs text-muted mb-3">{ticket.message}</p>}
+
+      {ticket.notes && ticket.notes.length > 0 && (
+        <div className="space-y-1.5 mb-3 border-l-2 border-line pl-3">
+          {ticket.notes.map((n, i) => (
+            <p key={i} className="text-[11px] text-muted">
+              <span className="text-gold font-semibold">Note</span> · {n.text}{' '}
+              <span className="opacity-60">({timeAgo(n.at)})</span>
+            </p>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between text-[11px] text-muted mb-3">
+        <span>Submitted {timeAgo(ticket.createdAt)}</span>
+        <button
+          disabled={busy}
+          onClick={() => update({ status: isOpen ? 'resolved' : 'open' })}
+          className="text-gold font-semibold hover:underline disabled:opacity-50"
+        >
+          {isOpen ? 'Mark resolved' : 'Reopen'}
+        </button>
       </div>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!noteInput.trim()) return;
+          update({ note: noteInput }).then(() => setNoteInput(''));
+        }}
+        className="flex gap-2"
+      >
+        <input
+          placeholder="Add an internal note…"
+          value={noteInput}
+          onChange={(e) => setNoteInput(e.target.value)}
+          className="flex-1 px-3 py-2 rounded text-xs"
+        />
+        <button type="submit" disabled={busy} className="btn-outline px-3 py-2 rounded text-xs font-semibold disabled:opacity-50">
+          Add
+        </button>
+      </form>
     </div>
   );
 }
@@ -52,37 +102,36 @@ export default function AdminPanel({ setView }) {
   const [passInput, setPassInput] = useState('');
   const [authStatus, setAuthStatus] = useState('idle'); // idle | checking | error
   const [authError, setAuthError] = useState('');
-  const [issues, setIssues] = useState([]);
+  const [token, setToken] = useState(null);
+
+  const [tickets, setTickets] = useState([]);
   const [status, setStatus] = useState('idle'); // idle | loading | error | loaded
   const [filter, setFilter] = useState('open');
   const tabsRef = useRef(null);
   const [pill, setPill] = useState({ left: 0, width: 0 });
 
   useEffect(() => {
-    if (!unlocked) return;
+    if (!unlocked || !token) return;
     setStatus('loading');
-    Promise.all(
-      TICKET_LABELS.map((label) =>
-        fetch(`${REPO_API}/issues?state=all&labels=${label}&per_page=50`).then((res) => {
-          if (!res.ok) throw new Error('GitHub API request failed');
-          return res.json();
-        })
-      )
-    )
-      .then((results) => {
-        const merged = new Map();
-        results.flat().forEach((issue) => merged.set(issue.id, issue));
-        const combined = Array.from(merged.values()).sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        );
-        setIssues(combined);
-        setStatus('loaded');
+    fetch('/api/tickets', { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          setTickets(data.tickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+          setStatus('loaded');
+        } else {
+          setStatus('error');
+        }
       })
       .catch(() => setStatus('error'));
-  }, [unlocked]);
+  }, [unlocked, token]);
 
-  const filtered = issues.filter((i) => (filter === 'all' ? true : i.state === filter));
-  const openCount = issues.filter((i) => i.state === 'open').length;
+  function handleTicketUpdated(updated) {
+    setTickets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+  }
+
+  const filtered = tickets.filter((t) => (filter === 'all' ? true : t.status === filter));
+  const openCount = tickets.filter((t) => t.status === 'open').length;
 
   useEffect(() => {
     const container = tabsRef.current;
@@ -101,9 +150,8 @@ export default function AdminPanel({ setView }) {
         <div className="panel rounded-xl p-8 max-w-sm">
           <h2 className="font-head text-xl font-extrabold mb-2">Admin Access</h2>
           <p className="text-muted text-xs mb-4">
-            The passcode is checked server-side and never ships in the site&apos;s code. That said, the ticket data
-            underneath is public GitHub issue data either way — this gate keeps casual visitors out, it&apos;s not
-            protecting anything sensitive.
+            The passcode is checked server-side and never ships in the site&apos;s code, and every request below is
+            authenticated with a short-lived session token — not just a local flag.
           </p>
           <form
             onSubmit={async (e) => {
@@ -118,6 +166,7 @@ export default function AdminPanel({ setView }) {
                 });
                 const data = await res.json();
                 if (res.ok && data.ok) {
+                  setToken(data.token);
                   setUnlocked(true);
                 } else {
                   setAuthStatus('error');
@@ -160,17 +209,16 @@ export default function AdminPanel({ setView }) {
             </span>
           )}
         </h2>
-        <span className="text-xs text-muted">{openCount} open · {issues.length} total</span>
+        <span className="text-xs text-muted">{openCount} open · {tickets.length} total</span>
       </div>
       <p className="text-muted text-sm mb-6 max-w-lg">
-        Booking requests and support complaints filed through the site, pulled directly from the GitHub Issues
-        tracker — one unified queue. Reply, label, or close them straight on GitHub; this panel is a fast read-only
-        view for triage.
+        Booking requests and support messages submitted through the site, stored on our own server — no GitHub
+        account required from visitors. Mark items resolved or leave yourself a note right here.
       </p>
 
       <div ref={tabsRef} className="relative inline-flex gap-1 mb-6 p-1 panel rounded">
         <div className="pill-indicator rounded" style={{ left: pill.left, width: pill.width }} />
-        {['open', 'closed', 'all'].map((f) => (
+        {['open', 'resolved', 'all'].map((f) => (
           <button
             key={f}
             data-tab={f}
@@ -194,11 +242,9 @@ export default function AdminPanel({ setView }) {
 
       {status === 'error' && (
         <div className="panel rounded-xl p-6 text-sm text-muted">
-          Couldn&apos;t reach the GitHub API right now (this can happen if you&apos;re rate-limited — unauthenticated
-          requests are capped at 60/hour per IP). Try again shortly, or view tickets directly on{' '}
-          <a href={`https://github.com/Geopossib/AnCore/issues`} target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">
-            GitHub
-          </a>.
+          Couldn&apos;t load tickets right now. If this is a fresh deploy, make sure a Redis integration is connected
+          in the Vercel dashboard (Settings → Integrations) and <code className="text-gold">ADMIN_SESSION_SECRET</code>{' '}
+          is set as an environment variable.
         </div>
       )}
 
@@ -208,8 +254,8 @@ export default function AdminPanel({ setView }) {
 
       {status === 'loaded' && filtered.length > 0 && (
         <div className="space-y-3">
-          {filtered.map((issue) => (
-            <TicketCard key={issue.id} issue={issue} />
+          {filtered.map((ticket) => (
+            <TicketCard key={ticket.id} ticket={ticket} token={token} onUpdated={handleTicketUpdated} />
           ))}
         </div>
       )}
