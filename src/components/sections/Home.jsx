@@ -187,8 +187,8 @@ export default function Home({ setView, onBook }) {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden" style={{ background: "#021739" }}>
-        <div className="absolute inset-0">
+      <section className="relative left-1/2 w-screen -translate-x-1/2" style={{ background: "#021739" }}>
+        <div className="absolute inset-0 overflow-hidden">
           <img src={HERO_IMAGE.src} alt={HERO_IMAGE.alt} className="w-full h-full object-cover opacity-60" loading="eager" />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(2,23,57,0.96) 20%, rgba(2,23,57,0.55) 65%, rgba(2,23,57,0.3) 100%)' }} />
         </div>
@@ -220,9 +220,9 @@ export default function Home({ setView, onBook }) {
         </div>
 
         {/* Floating stats card */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" style={{ marginBottom: '-56px' }}>
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-0 sm:-mb-14">
           <div ref={statsReveal.ref} className={statsReveal.className} style={statsReveal.style}>
-            <div className="bg-white rounded-xl shadow-xl px-6 sm:px-10 py-6 grid grid-cols-2 sm:grid-cols-4 gap-6 divide-x divide-gray-100">
+            <div className="bg-white rounded-xl shadow-xl px-6 sm:px-10 py-6 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6 sm:divide-x divide-gray-100">
               <StatCounter value={50} suffix="+" label="Clients Served" />
               <StatCounter value={120} suffix="+" label="Projects Completed" />
               <StatCounter value={5} suffix="+" label="Industries" />
@@ -233,7 +233,7 @@ export default function Home({ setView, onBook }) {
       </section>
 
       {/* ===== SERVICES ===== */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 pt-24 pb-20 bg-white">
+      <section className="relative left-1/2 w-screen -translate-x-1/2 pt-16 sm:pt-24 pb-20 bg-white">
         <div ref={servicesHeaderReveal.ref} className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 ${servicesHeaderReveal.className}`} style={servicesHeaderReveal.style}>
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-gold block mb-2">Our Services</span>
