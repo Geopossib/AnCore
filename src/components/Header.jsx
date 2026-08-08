@@ -22,6 +22,7 @@ export default function Header({ view, setView, onBook }) {
   const navRef = useRef(null);
   const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 });
   const reducedMotion = useReducedMotion();
+  const isHome = view === 'home';
 
   useEffect(() => {
     const nav = navRef.current;
@@ -55,8 +56,20 @@ export default function Header({ view, setView, onBook }) {
     setMobileOpen(false);
   }
 
+  const headerBg = isHome ? 'bg-white/95 border-b border-gray-200' : 'bg-[#071C44]/95 border-b border-white/10';
+  const brandTextColor = isHome ? 'text-navy' : 'text-white';
+  const navTextColor = isHome ? 'text-navy/70' : 'text-white/70';
+  const navHoverColor = isHome ? 'hover:text-navy' : 'hover:text-white';
+  const navActiveColor = isHome ? 'text-navy font-semibold' : 'text-white font-semibold';
+  const hamburgerColor = isHome ? 'text-navy' : 'text-white';
+  const mobileMenuBg = isHome ? 'bg-white border-t border-gray-200' : 'bg-[#071C44] border-t border-white/10';
+  const mobileLinkColor = isHome ? 'text-navy/70 hover:text-navy' : 'text-white/70 hover:text-white';
+
   return (
-    <header className={`sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200${scrolled ? ' scrolled' : ''}`} id="siteHeader">
+    <header
+      className={`sticky top-0 z-50 backdrop-blur ${headerBg}${scrolled ? ' scrolled' : ''}${!isHome ? ' dark-header' : ''}`}
+      id="siteHeader"
+    >
       <div className="header-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <button onClick={() => go('home')} className="flex items-center space-x-3">
           <img
@@ -65,7 +78,7 @@ export default function Header({ view, setView, onBook }) {
             className={`h-9 w-auto${reducedMotion ? '' : ' logo-pop'}`}
           />
           <div className="text-left">
-            <span className="font-head text-lg font-extrabold tracking-tight leading-none block text-navy">
+            <span className={`font-head text-lg font-extrabold tracking-tight leading-none block ${brandTextColor}`}>
               {brandText}
               <span className="type-cursor blinking">&nbsp;</span>
             </span>
@@ -73,13 +86,13 @@ export default function Header({ view, setView, onBook }) {
           </div>
         </button>
 
-        <nav className="hidden lg:flex items-center space-x-1 text-sm font-medium text-navy/70 relative" ref={navRef}>
+        <nav className={`hidden lg:flex items-center space-x-1 text-sm font-medium relative ${navTextColor}`} ref={navRef}>
           {NAV_ITEMS.map((item) => (
             <button
               key={item.key || item.id}
               data-navid={item.key || item.id}
               onClick={() => go(item.id)}
-              className={`px-3 py-2 rounded transition hover:text-navy${view === (item.key || item.id) ? ' text-navy font-semibold' : ''}`}
+              className={`px-3 py-2 rounded transition ${navHoverColor}${view === (item.key || item.id) ? ` ${navActiveColor}` : ''}`}
             >
               {item.label}
             </button>
@@ -91,7 +104,7 @@ export default function Header({ view, setView, onBook }) {
           Book Consultation
         </MagneticButton>
 
-        <button onClick={() => setMobileOpen((v) => !v)} className="lg:hidden p-2 text-navy">
+        <button onClick={() => setMobileOpen((v) => !v)} className={`lg:hidden p-2 ${hamburgerColor}`}>
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
@@ -99,9 +112,9 @@ export default function Header({ view, setView, onBook }) {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden border-t border-gray-200 bg-white px-4 pt-3 pb-5 space-y-1">
+        <div className={`lg:hidden px-4 pt-3 pb-5 space-y-1 ${mobileMenuBg}`}>
           {NAV_ITEMS.map((item) => (
-            <button key={item.key || item.id} onClick={() => go(item.id)} className="block w-full text-left px-3 py-2.5 rounded text-navy/70 hover:text-navy">
+            <button key={item.key || item.id} onClick={() => go(item.id)} className={`block w-full text-left px-3 py-2.5 rounded ${mobileLinkColor}`}>
               {item.label}
             </button>
           ))}

@@ -5,6 +5,7 @@
 html{overflow-x:hidden;width:100%;}
 body{font-family:'Inter',sans-serif;background:#021739;color:#FFFFFF;overflow-x:hidden;width:100%;max-width:100vw;}
 h1,h2,h3,h4,.font-head{font-family:'Manrope',sans-serif;}
+.font-poppins{font-family:'Poppins',sans-serif;}
 ::-webkit-scrollbar{width:8px;}
 ::-webkit-scrollbar-track{background:#021739;}
 ::-webkit-scrollbar-thumb{background:#12305F;border-radius:4px;}
@@ -35,6 +36,7 @@ input:focus,select:focus,textarea:focus{border-color:#C9980B;}
 header{transition:box-shadow .25s ease, background-color .25s ease;}
 header .header-inner{transition:height .25s ease;}
 header.scrolled{box-shadow:0 8px 24px rgba(0,0,0,0.12);background-color:rgba(255,255,255,0.98);}
+header.scrolled.dark-header{box-shadow:0 8px 24px rgba(0,0,0,0.3);background-color:rgba(7,28,68,0.98);}
 header.scrolled .header-inner{height:64px;}
 
 #navIndicator{position:absolute;bottom:0;height:2px;background:#C9980B;border-radius:2px;transition:left .28s cubic-bezier(.4,0,.2,1),width .28s cubic-bezier(.4,0,.2,1),opacity .2s ease;opacity:0;}
@@ -119,6 +121,9 @@ header.scrolled{
   background-color:rgba(255,255,255,0.85);
   backdrop-filter:blur(16px) saturate(140%);
   -webkit-backdrop-filter:blur(16px) saturate(140%);
+}
+header.scrolled.dark-header{
+  background-color:rgba(7,28,68,0.85);
 }
 .glass-modal{
   background:rgba(11,35,80,0.72);
