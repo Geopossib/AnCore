@@ -220,7 +220,7 @@ export default function Home({ setView, onBook, onGoToPortfolio }) {
         </div>
 
         {/* Floating stats card */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-0 sm:-mb-14">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-0 sm:-mb-20">
           <div ref={statsReveal.ref} className={statsReveal.className} style={statsReveal.style}>
             <div className="bg-white rounded-xl shadow-xl px-6 sm:px-10 py-6 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6 sm:divide-x divide-gray-100">
               <StatCounter value={50} suffix="+" label="Clients Served" />
@@ -233,7 +233,7 @@ export default function Home({ setView, onBook, onGoToPortfolio }) {
       </section>
 
       {/* ===== SERVICES ===== */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 pt-20 sm:pt-28 pb-20 bg-white">
+      <section className="relative left-1/2 w-screen -translate-x-1/2 pt-20 sm:pt-32 pb-20 bg-white">
         <div ref={servicesHeaderReveal.ref} className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 ${servicesHeaderReveal.className}`} style={servicesHeaderReveal.style}>
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-gold block mb-2">Our Services</span>
