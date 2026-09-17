@@ -20,22 +20,20 @@ const CTA_IMAGE = {
 const TRUSTED_BY = ['AIR PEACE', 'aerolink', 'GreenWings', 'SkyWay', 'AVIATEK'];
 
 const SERVICES = [
-  { label: 'Digital Marketing', desc: 'Data-driven strategies that increase visibility and ROI.', d: 'M13 2L3 14h7l-1 8 10-12h-7z' },
-  { label: 'Branding & Identity', desc: 'Build a strong, memorable brand that stands out.', d: 'M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z' },
-  { label: 'Website Development', desc: 'Fast, responsive and conversion-focused websites.', d: 'M4 5h16v14H4z M4 9h16', rect: true },
-  { label: 'Social Media Management', desc: 'Engage your audience and grow your community.', d: 'M7.7 7.3L10.3 16M16.3 7.3L13.7 16M8 6h8', dots: true },
-  { label: 'SEO & Analytics', desc: 'Rank higher and convert more with smart SEO.', d: 'M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35' },
-  { label: 'Content Marketing', desc: 'Powerful content that informs, engages and converts.', d: 'M7 9h10M7 13h10M7 17h6', box: true },
-  { label: 'Paid Advertising', desc: 'Target the right audience and maximize ROI.', d: 'M3 11l16-6-5 16-3-6-6-2z' },
-  { label: 'Email Marketing', desc: 'Nurture leads and build long-term relationships.', d: 'M4 5h16v11H8l-4 4z', envelope: true },
+  { label: 'Digital Marketing', desc: 'Data-driven strategies that increase visibility and ROI.', d: 'M13 2L3 14h7l-1 8 10-12h-7z', portfolioFilter: 'Digital Marketing' },
+  { label: 'Branding & Identity', desc: 'Build a strong, memorable brand that stands out.', d: 'M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z', portfolioFilter: 'Branding' },
+  { label: 'Website Development', desc: 'Fast, responsive and conversion-focused websites.', d: 'M4 5h16v14H4z M4 9h16', rect: true, portfolioFilter: 'Websites' },
+  { label: 'Social Media Management', desc: 'Engage your audience and grow your community.', d: 'M7.7 7.3L10.3 16M16.3 7.3L13.7 16M8 6h8', dots: true, portfolioFilter: 'Social Media' },
+  { label: 'SEO & Analytics', desc: 'Rank higher and convert more with smart SEO.', d: 'M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35', portfolioFilter: 'SEO' },
+  { label: 'Content Marketing', desc: 'Powerful content that informs, engages and converts.', d: 'M7 9h10M7 13h10M7 17h6', box: true, portfolioFilter: 'All' },
+  { label: 'Paid Advertising', desc: 'Target the right audience and maximize ROI.', d: 'M3 11l16-6-5 16-3-6-6-2z', portfolioFilter: 'Digital Marketing' },
+  { label: 'Email Marketing', desc: 'Nurture leads and build long-term relationships.', d: 'M4 5h16v11H8l-4 4z', envelope: true, portfolioFilter: 'All' },
 ];
 
 const INDUSTRIES = [
   { label: 'Aviation', d: 'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z M9 12l2 2 4-4' },
+  { label: 'Aerospace', d: 'M4 19l16-16M14 3h7v7M8 21l-5-5 3-3 5 5z', rocket: true },
   { label: 'Engineering', d: 'M12 3c2 2.5 3 5.5 3 8.5 0 2-.6 3.6-1.2 4.7L12 18l-1.8-1.8C9.6 15.1 9 13.5 9 11.5 9 8.5 10 5.5 12 3z' },
-  { label: 'SMEs', d: 'M4 21V8l8-5 8 5v13M9 21v-6h6v6', building: true },
-  { label: 'NGOs', d: 'M12 20s-7-4.5-7-10a4 4 0 018-1 4 4 0 018 1c0 5.5-7 10-7 10z' },
-  { label: 'Startups', d: 'M4 19l16-16M14 3h7v7M8 21l-5-5 3-3 5 5z', rocket: true },
   { label: 'Technology', d: 'M4 4h16v12H4z M9 20h6 M12 16v4', screen: true },
 ];
 
@@ -100,26 +98,28 @@ function ServiceIcon({ s }) {
   );
 }
 
-function ServiceCard({ s, delay }) {
+function ServiceCard({ s, delay, onSelect }) {
   const { ref, className, style } = useReveal(delay);
   return (
     <div ref={ref} className={className} style={style}>
-      <div className="bg-white border border-gray-200 rounded-xl p-6 h-full hover-lift-light">
+      <button
+        type="button"
+        onClick={() => onSelect(s.portfolioFilter)}
+        className="text-left w-full bg-white border border-gray-200 rounded-xl p-6 h-full hover-lift-light hover:border-gold/60 hover:shadow-md transition cursor-pointer"
+      >
         <div className="w-11 h-11 rounded-lg bg-gold/10 text-gold flex items-center justify-center mb-4">
           <ServiceIcon s={s} />
         </div>
         <h4 className="font-bold text-navy text-sm mb-1.5">{s.label}</h4>
-        <p className="text-xs text-gray-500 leading-relaxed mb-3">{s.desc}</p>
-        <span className="text-xs font-semibold text-gold">Learn More →</span>
-      </div>
+        <p className="text-xs text-gray-500 leading-relaxed">{s.desc}</p>
+      </button>
     </div>
   );
 }
 
-function IndustryIcon({ d, building, rocket, screen }) {
+function IndustryIcon({ d, rocket, screen }) {
   return (
     <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-      {building && <rect x="4" y="8" width="16" height="13" rx="1" />}
       {rocket && <path strokeLinecap="round" strokeLinejoin="round" d="M14 3h7v7" />}
       {screen && <rect x="4" y="4" width="16" height="12" rx="1.5" />}
       <path strokeLinecap="round" strokeLinejoin="round" d={d} />
@@ -160,21 +160,21 @@ function ProcessStep({ step, delay, isLast }) {
   return (
     <div ref={ref} className={`relative text-center flex-1 ${className}`} style={style}>
       {!isLast && (
-        <div className="dotline absolute top-7 left-1/2 w-full hidden sm:block" style={{ zIndex: 0 }} />
+        <div className="dotline absolute top-9 left-1/2 w-full hidden sm:block" style={{ zIndex: 0 }} />
       )}
-      <div className="relative z-10 w-14 h-14 mx-auto rounded-full bg-white border-2 border-gold flex items-center justify-center mb-3 text-gold">
-        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <div className="relative z-10 w-[4.5rem] h-[4.5rem] mx-auto rounded-full bg-white border-2 border-gold flex items-center justify-center mb-4 text-gold">
+        <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path strokeLinecap="round" strokeLinejoin="round" d={step.d} />
         </svg>
       </div>
-      <span className="text-[10px] font-bold text-gold block mb-1">{step.n}</span>
-      <h4 className="font-bold text-navy text-sm mb-1">{step.label}</h4>
-      <p className="text-xs text-gray-500 max-w-[140px] mx-auto">{step.desc}</p>
+      <span className="text-xs font-bold text-gold block mb-1.5">{step.n}</span>
+      <h4 className="font-bold text-navy text-base mb-1.5">{step.label}</h4>
+      <p className="text-sm text-gray-500 max-w-[160px] mx-auto">{step.desc}</p>
     </div>
   );
 }
 
-export default function Home({ setView, onBook }) {
+export default function Home({ setView, onBook, onGoToPortfolio }) {
   const heroReveal = useReveal(0);
   const statsReveal = useReveal(0.1);
   const servicesHeaderReveal = useReveal(0);
@@ -233,11 +233,11 @@ export default function Home({ setView, onBook }) {
       </section>
 
       {/* ===== SERVICES ===== */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 pt-16 sm:pt-24 pb-20 bg-white">
+      <section className="relative left-1/2 w-screen -translate-x-1/2 pt-20 sm:pt-28 pb-20 bg-white">
         <div ref={servicesHeaderReveal.ref} className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 ${servicesHeaderReveal.className}`} style={servicesHeaderReveal.style}>
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-gold block mb-2">Our Services</span>
-            <h2 className="font-head text-3xl font-extrabold text-navy mb-2">Solutions that drive impact</h2>
+            <h2 className="font-head text-4xl sm:text-5xl font-extrabold text-navy mb-2 tracking-tight">Solutions that drive impact</h2>
             <p className="text-gray-500 text-sm max-w-md">From strategy to execution, we deliver creative marketing solutions tailored to your business goals.</p>
           </div>
           <button onClick={() => setView('services')} className="px-5 py-3 rounded font-semibold text-sm bg-navy text-white hover:bg-navy/90 transition whitespace-nowrap self-start">
@@ -247,7 +247,7 @@ export default function Home({ setView, onBook }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {SERVICES.map((s, i) => (
-            <ServiceCard key={s.label} s={s} delay={(i % 4) * 0.06} />
+            <ServiceCard key={s.label} s={s} delay={(i % 4) * 0.06} onSelect={onGoToPortfolio} />
           ))}
         </div>
       </section>
@@ -259,10 +259,7 @@ export default function Home({ setView, onBook }) {
           <div ref={industriesHeaderReveal.ref} className={`lg:col-span-5 ${industriesHeaderReveal.className}`} style={industriesHeaderReveal.style}>
             <span className="text-xs font-bold uppercase tracking-widest text-gold block mb-2">Industries We Serve</span>
             <h2 className="font-head text-3xl font-extrabold text-white mb-3">Experts in your world</h2>
-            <p className="text-white/60 text-sm mb-6 max-w-sm">We understand your industry and craft strategies that deliver results.</p>
-            <button onClick={() => setView('services')} className="px-5 py-3 rounded font-semibold text-sm border border-white/40 text-white hover:bg-white/10 transition">
-              View All Industries →
-            </button>
+            <p className="text-white/60 text-sm max-w-sm">We understand your industry and craft strategies that deliver results.</p>
           </div>
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
             {INDUSTRIES.map((ind, i) => (
@@ -293,12 +290,12 @@ export default function Home({ setView, onBook }) {
       </section>
 
       {/* ===== PROCESS ===== */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 py-20 text-center bg-white">
+      <section className="relative left-1/2 w-screen -translate-x-1/2 py-28 sm:py-36 text-center bg-white">
         <div ref={processHeaderReveal.ref} className={processHeaderReveal.className} style={processHeaderReveal.style}>
           <span className="text-xs font-bold uppercase tracking-widest text-gold block mb-2">Our Process</span>
-          <h2 className="font-head text-3xl font-extrabold text-navy mb-14">A proven path to growth</h2>
+          <h2 className="font-head text-4xl sm:text-5xl font-extrabold text-navy mb-16 sm:mb-20 tracking-tight">A proven path to growth</h2>
         </div>
-        <div className="flex flex-col sm:flex-row gap-10 sm:gap-4 max-w-5xl mx-auto">
+        <div className="flex flex-col sm:flex-row gap-12 sm:gap-6 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {PROCESS.map((step, i) => (
             <ProcessStep key={step.n} step={step} delay={i * 0.1} isLast={i === PROCESS.length - 1} />
           ))}

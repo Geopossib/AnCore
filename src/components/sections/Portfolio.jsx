@@ -87,8 +87,8 @@ function ProjectCard({ project, delay, onOpen }) {
   );
 }
 
-export default function Portfolio({ setView, onBook }) {
-  const [filter, setFilter] = useState('All');
+export default function Portfolio({ setView, onBook, initialFilter }) {
+  const [filter, setFilter] = useState(initialFilter || 'All');
   const [caseStudy, setCaseStudy] = useState(null);
   const heroReveal = useReveal(0);
 

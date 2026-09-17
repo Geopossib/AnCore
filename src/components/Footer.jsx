@@ -17,7 +17,7 @@ const SERVICES_LINKS = [
   'Content Marketing',
 ];
 
-const INDUSTRIES_LINKS = ['Aviation', 'Engineering', 'SMEs', 'NGOs', 'Startups', 'Technology'];
+const INDUSTRIES_LINKS = ['Aviation', 'Aerospace', 'Engineering', 'Technology'];
 
 const SOCIALS = [
   { label: 'LinkedIn', d: 'M4.98 3.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM.5 8.5h4.5V22H.5zM8.5 8.5h4.3v1.85h.06c.6-1.1 2.06-2.26 4.24-2.26 4.53 0 5.37 2.9 5.37 6.68V22h-4.5v-6.4c0-1.53-.03-3.5-2.13-3.5-2.14 0-2.47 1.66-2.47 3.38V22h-4.5z' },
@@ -32,8 +32,8 @@ export default function Footer({ setView }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
         <div className="lg:col-span-1 sm:col-span-2">
           <button onClick={() => setView('home')} className="flex items-center gap-2 mb-4">
-            <img src={logoMark} alt="AnCore Marketing logo mark" className="h-8 w-auto" />
-            <span className="font-head font-extrabold text-white text-sm">AnCore <span className="text-gold font-semibold">Marketing</span></span>
+            <img src={logoMark} alt="AnCore Marketing logo mark" className="h-10 w-auto" />
+            <span className="font-head font-black text-white text-base">AnCore <span className="text-gold font-bold">Marketing</span></span>
           </button>
           <p className="text-white/50 leading-relaxed mb-5 max-w-xs">
             Strategic marketing that helps businesses grow, thrive and succeed.

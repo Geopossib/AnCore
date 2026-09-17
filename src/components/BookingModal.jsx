@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export default function BookingModal({ open, onClose, onSubmit }) {
-  const [form, setForm] = useState({ name: '', email: '' });
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,7 +20,7 @@ export default function BookingModal({ open, onClose, onSubmit }) {
       const data = await res.json();
       if (res.ok && data.ok) {
         onSubmit();
-        setForm({ name: '', email: '' });
+        setForm({ name: '', email: '', message: '' });
       } else {
         setError(data.error || 'Something went wrong. Please try again.');
       }
@@ -52,6 +52,14 @@ export default function BookingModal({ open, onClose, onSubmit }) {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full px-4 py-3 rounded text-sm"
+          />
+          <textarea
+            placeholder="Tell us about your project or the strategy you'd like to discuss (optional)"
+            value={form.message}
+            onChange={(e) => setForm({ ...form, message: e.target.value })}
+            rows={3}
+            maxLength={4000}
+            className="w-full px-4 py-3 rounded text-sm resize-none"
           />
           {error && <p className="text-[11px] text-red-400">{error}</p>}
           <button type="submit" disabled={submitting} className="w-full btn-gold py-3.5 rounded font-semibold text-sm disabled:opacity-60">

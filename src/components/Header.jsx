@@ -75,14 +75,14 @@ export default function Header({ view, setView, onBook }) {
           <img
             src={logoMark}
             alt="AnCore Marketing logo mark"
-            className={`h-9 w-auto${reducedMotion ? '' : ' logo-pop'}`}
+            className={`h-12 sm:h-14 w-auto${reducedMotion ? '' : ' logo-pop'}`}
           />
           <div className="text-left">
-            <span className={`font-head text-lg font-extrabold tracking-tight leading-none block ${brandTextColor}`}>
+            <span className={`font-head text-xl sm:text-2xl font-black tracking-tight leading-none block ${brandTextColor}`}>
               {brandText}
               <span className="type-cursor blinking">&nbsp;</span>
             </span>
-            <span className="text-[10px] uppercase tracking-[0.22em] text-gold font-semibold">Marketing</span>
+            <span className="text-[11px] uppercase tracking-[0.22em] text-gold font-bold">Marketing</span>
           </div>
         </button>
 

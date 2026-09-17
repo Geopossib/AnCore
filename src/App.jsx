@@ -35,6 +35,7 @@ export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [caseStudy, setCaseStudy] = useState(null);
   const [activePostSlug, setActivePostSlug] = useState(null);
+  const [portfolioFilter, setPortfolioFilter] = useState('All');
 
   function setView(next) {
     if (next === view) return;
@@ -71,6 +72,11 @@ export default function App() {
     setView('blog-post');
   }
 
+  function goToPortfolio(filter) {
+    setPortfolioFilter(filter || 'All');
+    setView('portfolio');
+  }
+
   const sectionClass = `view-section${transitioning ? ' view-leaving' : ''}`;
 
   return (
@@ -80,9 +86,9 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={sectionClass}>
-          {view === 'home' && <Home setView={setView} onBook={openBooking} />}
-          {view === 'services' && <Services setView={setView} />}
-          {view === 'portfolio' && <Portfolio setView={setView} onOpenCase={openCaseStudy} />}
+          {view === 'home' && <Home setView={setView} onBook={openBooking} onGoToPortfolio={goToPortfolio} />}
+          {view === 'services' && <Services setView={setView} onGoToPortfolio={goToPortfolio} />}
+          {view === 'portfolio' && <Portfolio setView={setView} onOpenCase={openCaseStudy} initialFilter={portfolioFilter} />}
           {view === 'about' && <About setView={setView} />}
           {view === 'insights' && <Insights setView={setView} onOpenPost={openPost} />}
           {view === 'blog-post' && <BlogPost slug={activePostSlug} setView={setView} onOpenPost={openPost} />}
