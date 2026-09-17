@@ -5,13 +5,13 @@ import Header from './components/Header';
 import FeatureBar from './components/FeatureBar';
 import Footer from './components/Footer';
 import BookingModal from './components/BookingModal';
-import CaseStudyModal from './components/CaseStudyModal';
 import ToastContainer from './components/ToastContainer';
 import useToast from './hooks/useToast';
 
 import Home from './components/sections/Home';
 import Services from './components/sections/Services';
 import Portfolio from './components/sections/Portfolio';
+import CaseStudy from './components/sections/CaseStudy';
 import About from './components/sections/About';
 import Insights from './components/sections/Insights';
 import Contact from './components/sections/Contact';
@@ -33,7 +33,7 @@ export default function App() {
   const { toasts, showToast } = useToast();
 
   const [bookingOpen, setBookingOpen] = useState(false);
-  const [caseStudy, setCaseStudy] = useState(null);
+  const [activeCaseStudy, setActiveCaseStudy] = useState(null);
   const [activePostSlug, setActivePostSlug] = useState(null);
   const [portfolioFilter, setPortfolioFilter] = useState('All');
 
@@ -60,11 +60,9 @@ export default function App() {
     setBookingOpen(false);
   }
 
-  function openCaseStudy(type) {
-    setCaseStudy(type);
-  }
-  function closeCaseStudy() {
-    setCaseStudy(null);
+  function openCaseStudy(key) {
+    setActiveCaseStudy(key);
+    setView('case-study');
   }
 
   function openPost(slug) {
@@ -86,9 +84,10 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={sectionClass}>
-          {view === 'home' && <Home setView={setView} onBook={openBooking} onGoToPortfolio={goToPortfolio} />}
+          {view === 'home' && <Home setView={setView} onBook={openBooking} onGoToPortfolio={goToPortfolio} onOpenCase={openCaseStudy} />}
           {view === 'services' && <Services setView={setView} onGoToPortfolio={goToPortfolio} />}
           {view === 'portfolio' && <Portfolio setView={setView} onOpenCase={openCaseStudy} initialFilter={portfolioFilter} />}
+          {view === 'case-study' && <CaseStudy projectKey={activeCaseStudy} setView={setView} onBook={openBooking} onOpenCase={openCaseStudy} />}
           {view === 'about' && <About setView={setView} />}
           {view === 'insights' && <Insights setView={setView} onOpenPost={openPost} />}
           {view === 'blog-post' && <BlogPost slug={activePostSlug} setView={setView} onOpenPost={openPost} />}
@@ -108,7 +107,6 @@ export default function App() {
       <Footer setView={setView} />
 
       <BookingModal open={bookingOpen} onClose={closeBooking} onSubmit={handleBookingSubmit} />
-      <CaseStudyModal open={!!caseStudy} type={caseStudy} onClose={closeCaseStudy} onBook={() => { closeCaseStudy(); openBooking(); }} />
       <ToastContainer toasts={toasts} />
     </>
   );

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import useReveal from '../../hooks/useReveal';
 import TiltCard from '../TiltCard';
-import CaseStudyModal from '../CaseStudyModal';
 
 const FILTERS = ['All', 'Branding', 'Websites', 'Digital Marketing', 'Social Media', 'SEO'];
 
@@ -87,9 +86,8 @@ function ProjectCard({ project, delay, onOpen }) {
   );
 }
 
-export default function Portfolio({ setView, onBook, initialFilter }) {
+export default function Portfolio({ setView, onOpenCase, initialFilter }) {
   const [filter, setFilter] = useState(initialFilter || 'All');
-  const [caseStudy, setCaseStudy] = useState(null);
   const heroReveal = useReveal(0);
 
   const filtered = filter === 'All' ? PROJECTS : PROJECTS.filter((p) => p.tags.includes(filter));
@@ -122,7 +120,7 @@ export default function Portfolio({ setView, onBook, initialFilter }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           {filtered.map((p, i) => (
-            <ProjectCard key={p.key} project={p} delay={(i % 3) * 0.08} onOpen={setCaseStudy} />
+            <ProjectCard key={p.key} project={p} delay={(i % 3) * 0.08} onOpen={onOpenCase} />
           ))}
         </div>
 
@@ -130,8 +128,6 @@ export default function Portfolio({ setView, onBook, initialFilter }) {
           <button className="btn-gold px-6 py-3 rounded font-semibold text-sm">Load More Projects</button>
         </div>
       </section>
-
-      <CaseStudyModal open={!!caseStudy} type={caseStudy} onClose={() => setCaseStudy(null)} onBook={() => { setCaseStudy(null); onBook(); }} />
     </div>
   );
 }

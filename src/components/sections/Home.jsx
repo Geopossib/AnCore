@@ -39,24 +39,28 @@ const INDUSTRIES = [
 
 const PROJECTS = [
   {
+    key: 'mfg',
     title: 'Aviation Brand Revamp',
     tags: 'Branding, Website, Digital Marketing',
     img: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80',
     alt: 'Aircraft engine turbine components representing an aviation brand revamp project',
   },
   {
+    key: 'avionics',
     title: 'Engineering Co. Website',
     tags: 'Website Development, SEO',
     img: 'https://images.unsplash.com/photo-1759922378222-47ad736a174d?auto=format&fit=crop&w=600&q=80',
     alt: 'Construction and engineering workers on site reviewing plans',
   },
   {
+    key: 'mro',
     title: 'NGO Awareness Campaign',
     tags: 'Social Media, Content Marketing',
     img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600&q=80',
     alt: 'Team collaborating on an NGO awareness campaign',
   },
   {
+    key: 'space',
     title: 'Logistics Company Website',
     tags: 'Website Development, SEO',
     img: 'https://images.unsplash.com/photo-1754959035256-8e42db4db9aa?auto=format&fit=crop&w=600&q=80',
@@ -139,11 +143,11 @@ function IndustryItem({ industry, delay }) {
   );
 }
 
-function ProjectCard({ project, delay }) {
+function ProjectCard({ project, delay, onOpen }) {
   const { ref, className, style } = useReveal(delay);
   return (
     <div ref={ref} className={className} style={style}>
-      <TiltCard className="bg-white border border-gray-200 rounded-xl overflow-hidden cursor-pointer">
+      <TiltCard className="bg-white border border-gray-200 rounded-xl overflow-hidden cursor-pointer" onClick={() => onOpen(project.key)}>
         <img src={project.img} alt={project.alt} className="w-full h-32 object-cover" loading="lazy" />
         <div className="p-4">
           <h4 className="font-bold text-navy text-sm mb-1">{project.title}</h4>
@@ -174,7 +178,7 @@ function ProcessStep({ step, delay, isLast }) {
   );
 }
 
-export default function Home({ setView, onBook, onGoToPortfolio }) {
+export default function Home({ setView, onBook, onGoToPortfolio, onOpenCase }) {
   const heroReveal = useReveal(0);
   const statsReveal = useReveal(0.1);
   const servicesHeaderReveal = useReveal(0);
@@ -284,7 +288,7 @@ export default function Home({ setView, onBook, onGoToPortfolio }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {PROJECTS.map((p, i) => (
-            <ProjectCard key={p.title} project={p} delay={i * 0.08} />
+            <ProjectCard key={p.title} project={p} delay={i * 0.08} onOpen={onOpenCase} />
           ))}
         </div>
       </section>
