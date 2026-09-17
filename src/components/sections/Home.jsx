@@ -187,7 +187,7 @@ export default function Home({ setView, onBook, onGoToPortfolio }) {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2" style={{ background: "#021739" }}>
+      <section className="relative z-10 left-1/2 w-screen -translate-x-1/2" style={{ background: "#021739" }}>
         <div className="absolute inset-0 overflow-hidden">
           <img src={HERO_IMAGE.src} alt={HERO_IMAGE.alt} className="w-full h-full object-cover opacity-60" loading="eager" />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(2,23,57,0.96) 20%, rgba(2,23,57,0.55) 65%, rgba(2,23,57,0.3) 100%)' }} />
